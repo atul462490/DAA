@@ -3,82 +3,55 @@
 
 using namespace std;
 
-// Function to partition the array and return the index of the pivot element
-int partition(vector<int>& arr, int low, int high) {
-    int pivot = arr[high];
-    int i = low - 1;
+int comparisons = 0;
 
-    for (int j = low; j <= high - 1; ++j) {
-        if (arr[j] <= pivot) {
+// Function to partition the array and return the pivot index
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high]; // Choose the last element as the pivot
+    int i = low - 1; // Index of the smaller element
+
+    for (int j = low; j < high; j++) {
+        // If current element is smaller than the pivot
+        if (arr[j] < pivot) {
             i++;
             swap(arr[i], arr[j]);
+            comparisons++; // Increment comparison count
         }
     }
-
     swap(arr[i + 1], arr[high]);
     return i + 1;
 }
 
-// Function to perform the Quick Sort algorithm
+// Function to perform Quick Sort
 void quickSort(vector<int>& arr, int low, int high) {
     if (low < high) {
         int pivotIndex = partition(arr, low, high);
 
-        // Recursively sort the two halves
-        quickSort(arr, low, pivotIndex - 1);
-        quickSort(arr, pivotIndex + 1, high);
+        quickSort(arr, low, pivotIndex - 1); // Recursively sort elements before pivot
+        quickSort(arr, pivotIndex + 1, high); // Recursively sort elements after pivot
     }
-}
-
-// Function to print the array
-void printArray(const vector<int>& arr) {
-    for (int num : arr) {
-        cout << num << " ";
-    }
-    cout << endl;
 }
 
 int main() {
-    vector<int> arr;
+    int n;
+    cout << "Enter the number of elements: ";
+    cin >> n;
 
-    int choice;
-    do {
-        cout << "\nMenu:\n";
-        cout << "1. Enter array elements\n";
-        cout << "2. Display original array\n";
-        cout << "3. Sort using Quick Sort and display\n";
-        cout << "4. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+    vector<int> arr(n);
+    cout << "Enter " << n << " elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
 
-        switch (choice) {
-            case 1:
-                int n;
-                cout << "Enter the number of elements: ";
-                cin >> n;
-                arr.resize(n);
-                cout << "Enter the elements: ";
-                for (int i = 0; i < n; ++i) {
-                    cin >> arr[i];
-                }
-                break;
-            case 2:
-                cout << "Original array: ";
-                printArray(arr);
-                break;
-            case 3:
-                quickSort(arr, 0, arr.size() - 1);
-                cout << "Sorted array using Quick Sort: ";
-                printArray(arr);
-                break;
-            case 4:
-                cout << "Exiting the program. Goodbye!\n";
-                break;
-            default:
-                cout << "Invalid choice. Please try again.\n";
-                break;
-        }
-    } while (choice != 4);
+    quickSort(arr, 0, n - 1);
+
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    cout << "Number of comparisons: " << comparisons << endl;
 
     return 0;
 }

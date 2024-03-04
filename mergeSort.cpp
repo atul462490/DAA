@@ -3,29 +3,30 @@
 
 using namespace std;
 
-int merge(vector<int>& arr, int left, int mid, int right) {
-    int comparisons = 0;
-
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
+int merge(vector<int>& arr, int left, int middle, int right, int& comparisons) {
+    int n1 = middle - left + 1;
+    int n2 = right - middle;
 
     vector<int> L(n1), R(n2);
 
     for (int i = 0; i < n1; i++)
         L[i] = arr[left + i];
     for (int j = 0; j < n2; j++)
-        R[j] = arr[mid + 1 + j];
+        R[j] = arr[middle + 1 + j];
 
     int i = 0, j = 0, k = left;
+    int inversions = 0;
+
     while (i < n1 && j < n2) {
+        comparisons++; // Counting comparisons
         if (L[i] <= R[j]) {
             arr[k] = L[i];
             i++;
         } else {
             arr[k] = R[j];
             j++;
+            inversions += n1 - i;
         }
-        comparisons++;
         k++;
     }
 
@@ -41,33 +42,45 @@ int merge(vector<int>& arr, int left, int mid, int right) {
         k++;
     }
 
-    return comparisons;
+    return inversions;
 }
 
-int mergeSort(vector<int>& arr, int left, int right) {
-    int comparisons = 0;
+int mergeSort(vector<int>& arr, int left, int right, int& comparisons) {
+    int inversions = 0;
     if (left < right) {
-        int mid = left + (right - left) / 2;
+        int middle = left + (right - left) / 2;
 
-        comparisons += mergeSort(arr, left, mid);
-        comparisons += mergeSort(arr, mid + 1, right);
+        inversions += mergeSort(arr, left, middle, comparisons);
+        inversions += mergeSort(arr, middle + 1, right, comparisons);
 
-        comparisons += merge(arr, left, mid, right);
+        inversions += merge(arr, left, middle, right, comparisons);
     }
-    return comparisons;
+    return inversions;
+}
+
+void printArray(const vector<int>& arr) {
+    for (int i = 0; i < arr.size(); i++)
+        cout << arr[i] << " ";
+    cout << endl;
 }
 
 int main() {
-    // Example usage:
-    vector<int> arr = {12, 11, 13, 5, 6};
-    int comparison_count = mergeSort(arr, 0, arr.size() - 1);
+    int n;
+    cout << "Enter the number of elements: ";
+    cin >> n;
+
+    vector<int> arr(n);
+    cout << "Enter " << n << " elements:\n";
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
+
+    int comparisons = 0;
+    int inversions = mergeSort(arr, 0, n - 1, comparisons);
 
     cout << "Sorted array: ";
-    for (int num : arr) {
-        cout << num << " ";
-    }
-
-    cout << "\nNumber of comparisons: " << comparison_count << endl;
+    printArray(arr);
+    cout << "Number of comparisons: " << comparisons << endl;
+    cout << "Number of inversions: " << inversions << endl;
 
     return 0;
 }
